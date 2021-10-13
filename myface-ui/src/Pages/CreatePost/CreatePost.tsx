@@ -1,21 +1,24 @@
-﻿import React, {FormEvent, useState} from "react";
+﻿﻿import React, {FormEvent, useState, useContext} from "react";
 import {Page} from "../Page/Page";
 import {createPost} from "../../Api/apiClient";
 import {Link} from "react-router-dom";
 import "./CreatePost.scss";
+import {LoginContext} from "../../Components/LoginManager/LoginManager";
 
 type FormStatus = "READY" | "SUBMITTING" | "ERROR" | "FINISHED"
 
 export function CreatePostForm(): JSX.Element {
     const [message, setMessage] = useState("");
     const [imageUrl, setImageUrl] = useState("");
-    const [userId, setUserId] = useState("");
+    // const [userId, setUserId] = useState("");
     const [status, setStatus] = useState<FormStatus>("READY");
+
+    const login = useContext(LoginContext);
 
     function submitForm(event: FormEvent) {
         event.preventDefault();
         setStatus("SUBMITTING");
-        createPost({message, imageUrl, userId: parseInt(userId)})
+        createPost(login.username, login.password, {message, imageUrl})
             .then(() => setStatus("FINISHED"))
             .catch(() => setStatus("ERROR"));
     }
@@ -38,11 +41,11 @@ export function CreatePostForm(): JSX.Element {
                 Image URL
                 <input className="form-input" value={imageUrl} onChange={event => setImageUrl(event.target.value)}/>
             </label>
-
+{/* 
             <label className="form-label">
                 User ID
                 <input className="form-input" value={userId} onChange={event => setUserId(event.target.value)}/>
-            </label>
+            </label> */}
 
             <button className="submit-button" disabled={status === "SUBMITTING"} type="submit">Create Post</button>
             {status === "ERROR" && <p>Something went wrong! Please try again.</p>}

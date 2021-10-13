@@ -37,7 +37,12 @@ export interface Post {
 export interface NewPost {
     message: string;
     imageUrl: string;
-    userId: number;
+}
+
+export interface NewInteraction {
+    postId: number;
+    interactionType: number;
+    userId:number;
 }
 
 export async function fetchUsers(searchTerm: string, page: number, pageSize: number): Promise<ListResponse<User>> {
@@ -70,13 +75,29 @@ export async function fetchPostsDislikedBy(page: number, pageSize: number, userI
     return await response.json();
 }
 
-export async function createPost(newPost: NewPost) {
-    const response = await fetch(`https://localhost:5001/posts/create`, {
+export async function createPost(username: string, password: string, newPost: NewPost) {
+        const response = await fetch(`https://localhost:5001/posts/create`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization":"Basic " + btoa(username + ":" + password),
         },
         body: JSON.stringify(newPost),
+    });
+    
+    if (!response.ok) {
+        throw new Error(await response.json())
+    }
+}
+
+export async function createInteraction(username: string, password: string, newInteraction: NewInteraction) {
+    const response = await fetch(`https://localhost:5001/interactions/create`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization":"Basic " + btoa(username + ":" + password),
+        },
+        body: JSON.stringify(newInteraction),
     });
     
     if (!response.ok) {

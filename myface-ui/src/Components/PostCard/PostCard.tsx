@@ -1,21 +1,35 @@
-﻿import React from "react";
-import {Post} from "../../Api/apiClient";
-import {Card} from "../Card/Card";
+﻿import React, {useContext} from "react";
+import { Post } from "../../Api/apiClient";
+import { Card } from "../Card/Card";
 import "./PostCard.scss";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { LoginContext } from "../../Components/LoginManager/LoginManager";
+import { createInteraction } from "../../Api/apiClient";
+
 
 interface PostCardProps {
     post: Post;
 }
 
 export function PostCard(props: PostCardProps): JSX.Element {
+    const login = useContext(LoginContext);
     return (
         <Card>
             <div className="post-card">
-                <img className="image" src={props.post.imageUrl} alt=""/>
+                <img className="image" src={props.post.imageUrl} alt="" />
                 <div className="message">{props.post.message}</div>
+                <button type="submit"
+                onClick={() => {
+                    createInteraction(login.username, login.password, { postId: props.post.id, interactionType: 0, userId: 10, })}
+                    }
+                >Like</button> <span>{props.post.likes.length} likes </span>
+                <button type="submit"
+                onClick={() => {
+                    createInteraction(login.username, login.password, { postId: props.post.id, interactionType: 0, userId: 10, })}
+                    }
+                >Dislike</button> <span>{props.post.likes.length} Dislikes </span>
                 <div className="user">
-                    <img className="profile-image" src={props.post.postedBy.profileImageUrl} alt=""/>
+                    <img className="profile-image" src={props.post.postedBy.profileImageUrl} alt="" />
                     <Link className="user-name" to={`/users/${props.post.postedBy.id}`}>{props.post.postedBy.displayName}</Link>
                 </div>
             </div>

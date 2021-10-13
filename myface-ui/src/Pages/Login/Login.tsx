@@ -11,8 +11,7 @@ export function Login(): JSX.Element {
     
     function tryLogin(event: FormEvent) {
         event.preventDefault();
-        loginContext.logIn();
-    }
+        loginContext.logIn(username, password);    }
     
     return (
         <Page containerClassName="login">
