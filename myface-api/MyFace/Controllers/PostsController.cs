@@ -29,35 +29,37 @@ namespace MyFace.Controllers
 
         [HttpGet("")]
         public ActionResult<PostListResponse> Search(
-            [FromQuery] PostSearchRequest searchRequest,
-            [FromHeader(Name = "Authorization")] string authorisationHeader)
+            [FromQuery] PostSearchRequest searchRequest)
+            // ,
+            // [FromHeader(Name = "Authorization")] string authorisationHeader)
         {
-            var authenticator = new AuthService(_users);
+            // var authenticator = new AuthService(_users);
 
-            if (authenticator.Authenticate(authorisationHeader))
-            {
+            // if (authenticator.Authenticate(authorisationHeader))
+            // {
                 var posts = _posts.Search(searchRequest);
                 var postCount = _posts.Count(searchRequest);
                 return PostListResponse.Create(searchRequest, posts, postCount);
-            }
+            // }
 
-            return new UnauthorizedResult();
+            // return new UnauthorizedResult();
 
         }
 
 
 
         [HttpGet("{id}")]
-        public ActionResult<PostResponse> GetById([FromRoute] int id, [FromHeader(Name = "Authorization")] string authorisationHeader)
+        public ActionResult<PostResponse> GetById([FromRoute] int id)
+        //[FromHeader(Name = "Authorization")] string authorisationHeader)
         {
-            var authenticator = new AuthService(_users);
+            // var authenticator = new AuthService(_users);
 
-            if (authenticator.Authenticate(authorisationHeader))
-            {
+            // if (authenticator.Authenticate(authorisationHeader))
+            // {
                 var post = _posts.GetById(id);
                 return new PostResponse(post);
-            }
-            return new UnauthorizedResult();
+            
+            // return new UnauthorizedResult();
         }
 
         [HttpPost("create")]
@@ -94,22 +96,23 @@ namespace MyFace.Controllers
         }
 
         [HttpPatch("{id}/update")]
-        public ActionResult<PostResponse> Update([FromRoute] int id, [FromBody] UpdatePostRequest update, [FromHeader(Name = "Authorization")] string authorisationHeader)
+        public ActionResult<PostResponse> Update([FromRoute] int id, [FromBody] UpdatePostRequest update)
+        // , [FromHeader(Name = "Authorization")] string authorisationHeader)
         {
-            var authenticator = new AuthService(_users);
+            // var authenticator = new AuthService(_users);
 
-            if (authenticator.Authenticate(authorisationHeader))
-            {
-                if (!ModelState.IsValid)
-                {
+            // if (authenticator.Authenticate(authorisationHeader))
+            // {
+            //     if (!ModelState.IsValid)
+            //     {
                     return BadRequest(ModelState);
-                }
+                // }
 
 
                 var post = _posts.Update(id, update);
                 return new PostResponse(post);
-            }
-            return new UnauthorizedResult();
+            // }
+            // return new UnauthorizedResult();
         }
 
         [HttpDelete("{id}")]

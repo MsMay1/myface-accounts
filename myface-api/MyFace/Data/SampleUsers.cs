@@ -138,6 +138,7 @@ namespace MyFace.Data
 
             return new User
             {
+                Type = Role.MEMBER,
                 FirstName = Data[index][0],
                 LastName = Data[index][1],
                 Username = Data[index][2],

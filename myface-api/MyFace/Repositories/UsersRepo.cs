@@ -68,7 +68,8 @@ namespace MyFace.Repositories
         }
 
         public User Create(CreateUserRequest newUser)
-        {            // generate a 128-bit salt using a cryptographically strong random sequence of nonzero values
+        {            
+            // generate a 128-bit salt using a cryptographically strong random sequence of nonzero values
             byte[] salt = new byte[128 / 8];
             using (var rngCsp = new RNGCryptoServiceProvider())
             {
@@ -87,6 +88,7 @@ namespace MyFace.Repositories
             {
                 FirstName = newUser.FirstName,
                 LastName = newUser.LastName,
+                Type = Role.MEMBER,
                 Email = newUser.Email,
                 Username = newUser.Username,
                 Hashed_password = hashed,

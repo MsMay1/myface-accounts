@@ -104,3 +104,17 @@ export async function createInteraction(username: string, password: string, newI
         throw new Error(await response.json())
     }
 }
+
+export async function deletePost(username: string, password: string, postId: number) {
+    const response = await fetch(`https://localhost:5001/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization":"Basic " + btoa(username + ":" + password),
+        },
+    });
+    
+    if (!response.ok) {
+        throw new Error(await response.json())
+    }
+}

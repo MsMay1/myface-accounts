@@ -4,7 +4,7 @@ import { Card } from "../Card/Card";
 import "./PostCard.scss";
 import { Link } from "react-router-dom";
 import { LoginContext } from "../../Components/LoginManager/LoginManager";
-import { createInteraction } from "../../Api/apiClient";
+import { createInteraction, deletePost } from "../../Api/apiClient";
 
 
 interface PostCardProps {
@@ -28,6 +28,11 @@ export function PostCard(props: PostCardProps): JSX.Element {
                     createInteraction(login.username, login.password, { postId: props.post.id, interactionType: 1})}
                     }
                 >👎</button> <span>{props.post.dislikes.length} Dislikes </span>
+                <button type="submit"
+                onClick={() => {
+                    deletePost(login.username, login.password, props.post.id)}
+                    }
+                >delete</button>
                 <div className="user">
                     <img className="profile-image" src={props.post.postedBy.profileImageUrl} alt="" />
                     <Link className="user-name" to={`/users/${props.post.postedBy.id}`}>{props.post.postedBy.displayName}</Link>

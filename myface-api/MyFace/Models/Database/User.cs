@@ -2,12 +2,19 @@
 
 namespace MyFace.Models.Database
 {
+    public enum Role
+    {
+        MEMBER = 0,
+        ADMIN = 1,
+    }
     public class User
     {
+
         public int Id { get; set; }
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public Role Type { get; set; }
         public string Username { get; set; }
         public string Hashed_password { get; set; }
         public byte[] Salt { get; set; }
