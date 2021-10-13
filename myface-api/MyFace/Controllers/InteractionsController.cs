@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using MyFace.Models.Database;
 using MyFace.Models.Request;
 using MyFace.Models.Response;
 using MyFace.Repositories;
@@ -10,10 +13,13 @@ namespace MyFace.Controllers
     public class InteractionsController : ControllerBase
     {
         private readonly IInteractionsRepo _interactions;
+        private readonly IUsersRepo _users;
 
-        public InteractionsController(IInteractionsRepo interactions)
+
+        public InteractionsController(IInteractionsRepo interactions, IUsersRepo users)
         {
             _interactions = interactions;
+            _users = users;
         }
     
         [HttpGet("")]
@@ -32,12 +38,23 @@ namespace MyFace.Controllers
         }
 
         [HttpPost("create")]
-        public IActionResult Create([FromBody] CreateInteractionRequest newUser)
+        public IActionResult Create([FromBody] CreateInteractionRequest newUser, [FromHeader(Name = "Authorization")] string authorisationHeader)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            
+                string encodedAuthHeader = authorisationHeader.Substring("Basic ".Length).Trim();
+
+                string usernamePassword = Encoding.UTF8.GetString(Convert.FromBase64String(encodedAuthHeader));
+
+                int seperate = usernamePassword.IndexOf(":");
+
+                string decodedUsername = usernamePassword.Substring(0, seperate);
+
+                User searchedUser = _users.GetByUsername(decodedUsername);
         
             var interaction = _interactions.Create(newUser);
 

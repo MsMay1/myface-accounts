@@ -4,8 +4,8 @@ namespace MyFace.Models.Database
 {
     public enum InteractionType
     {
-        LIKE,
-        DISLIKE,
+        LIKE = 0,
+        DISLIKE = 1,
     }
 
     public class Interaction
