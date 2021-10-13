@@ -11,7 +11,7 @@ namespace MyFace.Repositories
         IEnumerable<Interaction> Search(SearchRequest search);
         int Count(SearchRequest search);
         Interaction GetById(int id);
-        Interaction Create(CreateInteractionRequest create);
+       Interaction Create(CreateInteractionRequest create, int userId);
         void Delete(int id);
     }
     
@@ -41,14 +41,14 @@ namespace MyFace.Repositories
             return _context.Interactions.Single(i => i.Id == id);
         }
 
-        public Interaction Create(CreateInteractionRequest create)
+        public Interaction Create(CreateInteractionRequest create, int userId)
         {
             var insertResult = _context.Interactions.Add(new Interaction
             {
                 Date = DateTime.Now,
                 Type = create.InteractionType,
                 PostId = create.PostId,
-                UserId = create.UserId,
+                UserId = userId,
             });
             _context.SaveChanges();
             return insertResult.Entity;

@@ -71,9 +71,9 @@ namespace MyFace.Controllers
                 {
                     return BadRequest(ModelState);
                 }
+                
                 string encodedAuthHeader = authorisationHeader.Substring("Basic ".Length).Trim();
 
-                // Encode and return hash
                 string usernamePassword = Encoding.UTF8.GetString(Convert.FromBase64String(encodedAuthHeader));
 
                 int seperate = usernamePassword.IndexOf(":");

@@ -5,6 +5,7 @@ using MyFace.Models.Database;
 using MyFace.Models.Request;
 using MyFace.Models.Response;
 using MyFace.Repositories;
+using MyFace.Services;
 
 namespace MyFace.Controllers
 {
@@ -40,28 +41,35 @@ namespace MyFace.Controllers
         [HttpPost("create")]
         public IActionResult Create([FromBody] CreateInteractionRequest newUser, [FromHeader(Name = "Authorization")] string authorisationHeader)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var authenticator = new AuthService(_users);
 
+            if (authenticator.Authenticate(authorisationHeader)){
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                
+                    string encodedAuthHeader = authorisationHeader.Substring("Basic ".Length).Trim();
+
+                    string usernamePassword = Encoding.UTF8.GetString(Convert.FromBase64String(encodedAuthHeader));
+
+                    int seperate = usernamePassword.IndexOf(":");
+
+                    string decodedUsername = usernamePassword.Substring(0, seperate);
+
+                    User searchedUser = _users.GetByUsername(decodedUsername);
             
-                string encodedAuthHeader = authorisationHeader.Substring("Basic ".Length).Trim();
+                var interaction = _interactions.Create(newUser, searchedUser.Id);
 
-                string usernamePassword = Encoding.UTF8.GetString(Convert.FromBase64String(encodedAuthHeader));
-
-                int seperate = usernamePassword.IndexOf(":");
-
-                string decodedUsername = usernamePassword.Substring(0, seperate);
-
-                User searchedUser = _users.GetByUsername(decodedUsername);
-        
-            var interaction = _interactions.Create(newUser);
-
-            var url = Url.Action("GetById", new { id = interaction.Id });
-            var responseViewModel = new InteractionResponse(interaction);
-            return Created(url, responseViewModel);
+                var url = Url.Action("GetById", new { id = interaction.Id });
+                var responseViewModel = new InteractionResponse(interaction);
+                return Created(url, responseViewModel);
+            }
+        return new UnauthorizedResult();
         }
+            
+        
 
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] int id)
