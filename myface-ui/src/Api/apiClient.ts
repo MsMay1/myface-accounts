@@ -42,7 +42,7 @@ export interface NewPost {
 export interface NewInteraction {
     postId: number;
     interactionType: number;
-    userId:number;
+    // userId:number;
 }
 
 export async function fetchUsers(searchTerm: string, page: number, pageSize: number): Promise<ListResponse<User>> {

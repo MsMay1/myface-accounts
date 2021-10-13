@@ -20,14 +20,14 @@ export function PostCard(props: PostCardProps): JSX.Element {
                 <div className="message">{props.post.message}</div>
                 <button type="submit"
                 onClick={() => {
-                    createInteraction(login.username, login.password, { postId: props.post.id, interactionType: 0, userId: 10, })}
+                    createInteraction(login.username, login.password, { postId: props.post.id, interactionType: 0})}
                     }
-                >Like</button> <span>{props.post.likes.length} likes </span>
+                >👍</button> <span>{props.post.likes.length} likes </span>
                 <button type="submit"
                 onClick={() => {
-                    createInteraction(login.username, login.password, { postId: props.post.id, interactionType: 0, userId: 10, })}
+                    createInteraction(login.username, login.password, { postId: props.post.id, interactionType: 1})}
                     }
-                >Dislike</button> <span>{props.post.likes.length} Dislikes </span>
+                >👎</button> <span>{props.post.dislikes.length} Dislikes </span>
                 <div className="user">
                     <img className="profile-image" src={props.post.postedBy.profileImageUrl} alt="" />
                     <Link className="user-name" to={`/users/${props.post.postedBy.id}`}>{props.post.postedBy.displayName}</Link>
