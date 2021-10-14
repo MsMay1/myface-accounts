@@ -16,6 +16,8 @@ namespace MyFace.Repositories
         User GetByUsername(string name);
         User Create(CreateUserRequest newUser);
         User Update(int id, UpdateUserRequest update);
+       void UpdateRole(int id);
+
         void Delete(int id);
     }
 
@@ -68,7 +70,7 @@ namespace MyFace.Repositories
         }
 
         public User Create(CreateUserRequest newUser)
-        {            
+        {
             // generate a 128-bit salt using a cryptographically strong random sequence of nonzero values
             byte[] salt = new byte[128 / 8];
             using (var rngCsp = new RNGCryptoServiceProvider())
@@ -116,6 +118,26 @@ namespace MyFace.Repositories
             _context.SaveChanges();
 
             return user;
+        }
+
+        public void UpdateRole(int id)
+        {
+            var user = GetById(id);
+            
+
+            if (user.Type == Role.ADMIN)
+            {
+
+                user.Type = Role.MEMBER;
+            }
+            else
+            {
+                user.Type = Role.ADMIN;
+            }
+
+            _context.Users.Update(user);
+            _context.SaveChanges();
+
         }
 
         public void Delete(int id)

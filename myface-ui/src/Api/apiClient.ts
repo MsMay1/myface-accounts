@@ -45,6 +45,20 @@ export interface NewInteraction {
     // userId:number;
 }
 
+export async function UpdateUserRole(userId: string | number, username: string, password: string) {
+    const response = await fetch(`https://localhost:5001/users/${userId}/updaterole`,  {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization":"Basic " + btoa(username + ":" + password),
+        }})
+    //     body: JSON.stringify(newInteraction),
+    // });
+    if (!response.ok) {
+        throw new Error(await response.json())
+    }
+}
+
 export async function fetchUsers(searchTerm: string, page: number, pageSize: number): Promise<ListResponse<User>> {
     const response = await fetch(`https://localhost:5001/users?search=${searchTerm}&page=${page}&pageSize=${pageSize}`);
     return await response.json();
@@ -117,4 +131,7 @@ export async function deletePost(username: string, password: string, postId: num
     if (!response.ok) {
         throw new Error(await response.json())
     }
+    // else if(response.status == 403){
+    //     throw new Error("Access Denied")
+    // }
 }

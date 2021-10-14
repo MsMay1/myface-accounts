@@ -30,16 +30,16 @@ namespace MyFace.Controllers
         [HttpGet("")]
         public ActionResult<PostListResponse> Search(
             [FromQuery] PostSearchRequest searchRequest)
-            // ,
-            // [FromHeader(Name = "Authorization")] string authorisationHeader)
+        // ,
+        // [FromHeader(Name = "Authorization")] string authorisationHeader)
         {
             // var authenticator = new AuthService(_users);
 
             // if (authenticator.Authenticate(authorisationHeader))
             // {
-                var posts = _posts.Search(searchRequest);
-                var postCount = _posts.Count(searchRequest);
-                return PostListResponse.Create(searchRequest, posts, postCount);
+            var posts = _posts.Search(searchRequest);
+            var postCount = _posts.Count(searchRequest);
+            return PostListResponse.Create(searchRequest, posts, postCount);
             // }
 
             // return new UnauthorizedResult();
@@ -56,9 +56,9 @@ namespace MyFace.Controllers
 
             // if (authenticator.Authenticate(authorisationHeader))
             // {
-                var post = _posts.GetById(id);
-                return new PostResponse(post);
-            
+            var post = _posts.GetById(id);
+            return new PostResponse(post);
+
             // return new UnauthorizedResult();
         }
 
@@ -73,7 +73,7 @@ namespace MyFace.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                
+
                 string encodedAuthHeader = authorisationHeader.Substring("Basic ".Length).Trim();
 
                 string usernamePassword = Encoding.UTF8.GetString(Convert.FromBase64String(encodedAuthHeader));
@@ -105,12 +105,12 @@ namespace MyFace.Controllers
             // {
             //     if (!ModelState.IsValid)
             //     {
-                    return BadRequest(ModelState);
-                // }
+            // return BadRequest(ModelState);
+            // }
 
 
-                var post = _posts.Update(id, update);
-                return new PostResponse(post);
+            var post = _posts.Update(id, update);
+            return new PostResponse(post);
             // }
             // return new UnauthorizedResult();
         }
@@ -122,8 +122,23 @@ namespace MyFace.Controllers
 
             if (authenticator.Authenticate(authorisationHeader))
             {
-                _posts.Delete(id);
-                return Ok();
+                string encodedAuthHeader = authorisationHeader.Substring("Basic ".Length).Trim();
+
+                string usernamePassword = Encoding.UTF8.GetString(Convert.FromBase64String(encodedAuthHeader));
+
+                int seperate = usernamePassword.IndexOf(":");
+
+                string decodedUsername = usernamePassword.Substring(0, seperate);
+
+                User searchedUser = _users.GetByUsername(decodedUsername);
+
+                if(searchedUser.Type == Role.ADMIN){
+                    _posts.Delete(id);
+                    return Ok();
+                }
+                else {
+                    return StatusCode(403, "unauthorised access");
+                }
             }
 
             return new UnauthorizedResult();

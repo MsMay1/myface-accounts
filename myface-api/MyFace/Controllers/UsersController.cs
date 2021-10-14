@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using MyFace.Models.Database;
 using MyFace.Models.Request;
 using MyFace.Models.Response;
 using MyFace.Repositories;
+using MyFace.Services;
 
 namespace MyFace.Controllers
 {
@@ -15,7 +19,7 @@ namespace MyFace.Controllers
         {
             _users = users;
         }
-        
+
         [HttpGet("")]
         public ActionResult<UserListResponse> Search([FromQuery] UserSearchRequest searchRequest)
         {
@@ -38,7 +42,7 @@ namespace MyFace.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             var user = _users.Create(newUser);
 
             var url = Url.Action("GetById", new { id = user.Id });
@@ -57,7 +61,36 @@ namespace MyFace.Controllers
             var user = _users.Update(id, update);
             return new UserResponse(user);
         }
-        
+
+        [HttpPatch("{id}/updaterole")]
+        public ActionResult UpdateRole([FromRoute] int id, [FromHeader(Name = "Authorization")] string authorisationHeader)
+        {
+            var authenticator = new AuthService(_users);
+
+            if (authenticator.Authenticate(authorisationHeader))
+            {
+                string encodedAuthHeader = authorisationHeader.Substring("Basic ".Length).Trim();
+
+                string usernamePassword = Encoding.UTF8.GetString(Convert.FromBase64String(encodedAuthHeader));
+
+                int seperate = usernamePassword.IndexOf(":");
+
+                string decodedUsername = usernamePassword.Substring(0, seperate);
+
+                User searchedUser = _users.GetByUsername(decodedUsername);
+
+                if (searchedUser.Type == Role.ADMIN)
+                {
+                    _users.UpdateRole(id);
+                    return Ok();
+                }
+
+                return StatusCode(403, "unauthorised access");
+            }
+
+            return new UnauthorizedResult();
+        }
+
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] int id)
         {
