@@ -7,6 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MyFace.Repositories;
 using MyFace.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace MyFace
 {
@@ -24,6 +27,22 @@ namespace MyFace
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)  
+           .AddJwtBearer(options =>  
+           {  
+               options.TokenValidationParameters = new TokenValidationParameters  
+               {  
+                   ValidateIssuer = true,  
+                   ValidateAudience = true,  
+                   ValidateLifetime = true,  
+                   ValidateIssuerSigningKey = true,  
+  
+                   ValidIssuer = "https://localhost:5001",  
+                   ValidAudience = "https://localhost:5001",  
+                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KeyForSignInSecret@1234"))  
+               };  
+           });  
+  
             services.AddDbContext<MyFaceDbContext>(options =>
             {
                 options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
@@ -63,6 +82,10 @@ namespace MyFace
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication(); 
+            
+            app.UseAuthorization();  
 
             app.UseCors(CORS_POLICY_NAME);
 
